@@ -13,15 +13,25 @@ export default function Employees() {
   async function fetchData() {
     try {
       const response = await getAllData();
-      setData(response);
+      const dataFormatter = (response || []).map((each) => {
+        return {
+          ...each,
+          admission_date: dateFormatter(each?.admission_date),
+          phone: phoneNumberFormatter(each?.phone)
+        }
+      })
+      setData(dataFormatter);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
     }
   }
 
   function filterData() {
-    return data.filter((f) =>
-      (f?.name || "").toLowerCase().includes(filters.toLowerCase())
+    return (data || []).filter(
+      (f) =>
+        (f?.name || "").toLowerCase().includes(filters.toLowerCase()) ||
+        (f?.job || "").toLowerCase().includes(filters.toLowerCase()) ||
+        (f?.phone || "").toLowerCase().includes(filters.toLowerCase())
     );
   }
 
@@ -65,10 +75,16 @@ export default function Employees() {
                   <td>
                     <img className="profile-img" src={item?.image} alt="Foto" />
                   </td>
-                  <td>{item.name || 'Indisponível'}</td>
-                  <td className="hide-on-small">{item.job || 'Indisponível'}</td>
-                  <td className="hide-on-small">{dateFormatter(item?.admission_date) || 'Indisponível'}</td>
-                  <td className="hide-on-small">{phoneNumberFormatter(item?.phone) || 'Indisponível'}</td>
+                  <td>{item.name || "Indisponível"}</td>
+                  <td className="hide-on-small">
+                    {item.job || "Indisponível"}
+                  </td>
+                  <td className="hide-on-small">
+                    {item?.admission_date || "Indisponível"}
+                  </td>
+                  <td className="hide-on-small">
+                    {item?.phone || "Indisponível"}
+                  </td>
                   <td className="hide-on-large">
                     <button
                       className="expand-button"
@@ -87,21 +103,23 @@ export default function Employees() {
                 </tr>
                 {expandedRows.includes(index) && (
                   <React.Fragment>
-                  <tr className="details-row">
-                    <td colSpan="3">
-                      <strong>Cargo:</strong> {item.job || 'Indisponível'}
-                    </td>
-                  </tr>
-                  <tr className="details-row">
-                    <td colSpan="3">
-                      <strong>Data de Admissão:</strong> {dateFormatter(item?.admission_date) || 'Indisponível'}
-                    </td>
-                  </tr>
-                  <tr className="details-row">
-                    <td colSpan="3">
-                      <strong>Telefone:</strong> {phoneNumberFormatter(item?.phone) || 'Indisponível'}
-                    </td>
-                  </tr>
+                    <tr className="details-row">
+                      <td colSpan="3">
+                        <strong>Cargo:</strong> {item.job || "Indisponível"}
+                      </td>
+                    </tr>
+                    <tr className="details-row">
+                      <td colSpan="3">
+                        <strong>Data de Admissão:</strong>{" "}
+                        {item?.admission_date || "Indisponível"}
+                      </td>
+                    </tr>
+                    <tr className="details-row">
+                      <td colSpan="3">
+                        <strong>Telefone:</strong>{" "}
+                        {item?.phone || "Indisponível"}
+                      </td>
+                    </tr>
                   </React.Fragment>
                 )}
               </React.Fragment>
